@@ -68,6 +68,6 @@ class UserControllerTest {
         // Act
 
         // Assert
-        assertThat(true).isFalse();
+        assertThat(1).isEqualTo(2);
     }
 }

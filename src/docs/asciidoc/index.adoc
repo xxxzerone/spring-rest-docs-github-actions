@@ -1,0 +1,22 @@
+= PinUp API Document
+PinUp team
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[introduction]]
+== 소개
+
+핀업 API 문서 입니다.
+== 카테고리
+
+* link:notice.html[공지사항 API]
+* link:faq.html[자주 묻는 질문 API]
+= 사용자
+== 사용자 API
+=== 전체 사용자 조회 API
+
+operation::user-controller-test/find-all[snippets='http-request,http-response']

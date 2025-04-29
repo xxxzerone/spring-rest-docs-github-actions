@@ -23,6 +23,7 @@ jobs:
           install-awslocal: 'true'
           configuration: DEBUG=1
         env:
+          ACTIVATE_PRO: 0
           LOCALSTACK_API_KEY: 'test'
 
       - name: Run Tests against LocalStack

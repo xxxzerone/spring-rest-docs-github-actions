@@ -1,0 +1,46 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches: ['dev']
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      #   - name: Setup Gradle
+      # uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+      #   uses: gradle/actions/setup-gradle@v4 # v4.0.0
+      - name: Grant execute permission
+        run: chmod +x ./gradlew
+
+      - name: Run Tests
+        run: ./gradlew test
+
+      - name: Test result add PR comment
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: '**/build/test-results/test/TEST-*.xml'
+
+      - name: Test fail, fail code line add Check comment
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: '**/build/test-results/test/TEST-*.xml'
+          token: ${{ github.token }}

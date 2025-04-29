@@ -21,10 +21,6 @@ configurations {
     asciidoctorExt
 }
 
-ext {
-    snippetsDir = file('build/generated-snippets')
-}
-
 repositories {
     mavenCentral()
 }
@@ -44,26 +40,53 @@ dependencies {
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
-    outputs.dir snippetsDir
+ext {
+    restDocsDir = file('src/main/resources/static/docs')
+    // default snippetsDir의 값이 build/generated-snippets 이기 때문에 명시적으로 적어줄 필요 없음
+//    snippetsDir = file('build/generated-snippets')
 }
 
-//test {
+tasks.named('test') {
+    useJUnitPlatform()
+    // default snippetsDir의 값을 사용
 //    outputs.dir snippetsDir
-//}
+}
 
 asciidoctor {
-    inputs.dir snippetsDir
+    // default snippetsDir의 값을 사용
+//    inputs.dir snippetsDir
     configurations 'asciidoctorExt'
-    sources {
-        include '**/*.adoc'
-    }
-    baseDirFollowsSourceFile()
+//    sources {
+//        include '**/*.adoc'
+//    }
+//    baseDirFollowsSourceFile()
     dependsOn(tasks.named('test'))
 }
 
+tasks.register('copyApiDocs', Copy) {
+    dependsOn asciidoctor
+    doFirst {
+        delete file(restDocsDir)
+    }
+    from asciidoctor.outputDir
+    into file(restDocsDir)
+}
+
+processResources {
+    if (project.hasProperty('prod')) {
+        println '>>>>'
+        println (project.properties)
+        println '@@@@'
+    }
+}
+
 bootJar {
+//    dependsOn(tasks.named('copyApiDocs'))
+    /**
+     * 아래와 같이 하면 jar 내부에만 포함되기 때문에 파일은 볼 수 없다.
+     * jar -tf build/libs/app.jar | grep static/docs
+     * 위의 명령어로 확인해보면 static/docs/index.html이 생성되어 있는걸 확인할 수 있다.
+     */
     dependsOn(tasks.named('asciidoctor'))
     from("${asciidoctor.outputDir}") {
         into 'static/docs'

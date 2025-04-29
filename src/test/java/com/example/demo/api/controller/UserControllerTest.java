@@ -60,14 +60,4 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
-    @DisplayName("깃 액션 테스트 실패 확인")
-    @Test
-    void testFail() {
-        // Arrange
-
-        // Act
-
-        // Assert
-        assertThat(1).isEqualTo(2);
-    }
 }

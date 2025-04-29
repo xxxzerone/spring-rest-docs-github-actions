@@ -7,6 +7,7 @@ on:
 permissions:
   contents: read
   checks: write
+  pull-requests: write
 
 jobs:
   build:
@@ -37,7 +38,7 @@ jobs:
         with:
           files: '**/build/test-results/test/TEST-*.xml'
 
-      - name: 테스트 실패 시, 실패한 코드 라인에 Check 코멘트를 등록합니다
+      - name: Test fail, fail code line add Check comment
         uses: mikepenz/action-junit-report@v5
         if: always()
         with:

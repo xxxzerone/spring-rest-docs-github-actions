@@ -51,5 +51,5 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ steps.extract_version.outputs.version }}
+          tags: testxxboy/actions-test:${{ steps.extract_version.outputs.version }}
           labels: version=${{ steps.extract_version.outputs.version }}

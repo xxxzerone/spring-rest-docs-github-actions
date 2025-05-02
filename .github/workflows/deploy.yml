@@ -63,7 +63,8 @@ jobs:
 
       - name: Get GitHub IP
         id: ip
-        uses: haythem/public-ip@v1
+        run: |
+          echo "ipv4=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

@@ -7,6 +7,10 @@ on:
     branches:
       - dev
 
+env:
+  AWS_REGION: 'ap-northeast-2'
+  DOCKER_HUB_REGISTRY: 'testxxboy/actions-test'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,8 +31,11 @@ jobs:
       - name: Grant execute permission
         run: chmod +x ./gradlew
 
-      - name: Run Build
-        run: ./gradlew clean -Pprod build
+      - name: Run clean gradle
+        run: ./gradlew clean
+
+      - name: Run build gradle
+        run: ./gradlew -Pprod build
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -53,3 +60,25 @@ jobs:
           push: true
           tags: testxxboy/actions-test:${{ steps.extract_version.outputs.version }}
           labels: version=${{ steps.extract_version.outputs.version }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Connect to EC2 & Execute Application
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.EC2_SSH_PORT }}
+          envs: DOCKER_IMAGE
+          script: |
+            DOCKER_IMAGE=${{ env.DOCKER_HUB_REGISTRY }}:${{ steps.extract_version.outputs.version }}
+            docker stop $(docker ps -a -q) 
+            docker rm $(docker ps -a -q) 
+            docker pull $DOCKER_IMAGE
+            docker run -d --name pinup $DOCKER_IMAGE

@@ -61,12 +61,20 @@ jobs:
           tags: testxxboy/actions-test:${{ steps.extract_version.outputs.version }}
           labels: version=${{ steps.extract_version.outputs.version }}
 
+      - name: Get GitHub IP
+        id: ip
+        uses: haythem/public-ip@v1
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
+
+      - name: Add GitHub IP to AWS Security Group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32
 
       - name: Connect to EC2 & Execute Application
         uses: appleboy/ssh-action@v1
@@ -82,3 +90,7 @@ jobs:
             docker rm $(docker ps -a -q) 
             docker pull $DOCKER_IMAGE
             docker run -d --name pinup $DOCKER_IMAGE
+
+      - name: Remove IP FROM Security Group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id ${{ secrets.AWS_SG_ID }} --protocol tcp --port 22 --cidr ${{ steps.ip.outputs.ipv4 }}/32

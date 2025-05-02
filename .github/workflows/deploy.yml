@@ -91,9 +91,20 @@ jobs:
           port: ${{ secrets.EC2_SSH_PORT }}
           envs: DOCKER_IMAGE
           script: |
+            CONTAINER_NAME=pinup
             DOCKER_IMAGE=${{ env.DOCKER_HUB_REGISTRY }}:${{ steps.extract_version.outputs.version }}
-            docker stop $(docker ps -a -q) 
-            docker rm $(docker ps -a -q) 
+
+            if [ $(sudo docker ps -q -f name=^/${CONTAINER_NAME}$) ]; then
+              sudo docker stop $CONTAINER_NAME
+              sudo docker rm $CONTAINER_NAME
+            fi
+
+            docker images --format "{{.Repository}}:{{.Tag}} {{.ID}}" | grep "^${{ env.DOCKER_HUB_REGISTRY }}:" | while read repo_tag image_id
+            do
+              echo "Removing image: $repo_tag (ID: $image_id)"
+              docker rmi -f "$image_id"
+            done
+
             docker pull $DOCKER_IMAGE
             docker run -d --name pinup -p 8080:8080 $DOCKER_IMAGE
 

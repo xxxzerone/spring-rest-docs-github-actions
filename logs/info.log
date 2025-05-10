@@ -1,0 +1,2 @@
+[2025-05-10 22:52:31:18527][http-nio-8080-exec-1] INFO  c.e.d.api.logger.LoggerController - [LoggerController] logger
+[2025-05-10 22:52:31:18528][http-nio-8080-exec-1] INFO  c.e.demo.api.logger.LoggerService - info: ##info

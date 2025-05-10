@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- base.xml default.xml에 존재하는 Log 메시지의 Color 설정 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
+
+    <!-- 콘솔에 출력되는 로그 패턴 -->
+<!--    <property name="CONSOLE_LOG_PATTERN"-->
+<!--              value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n" />-->
+    <!-- Log 파일에 기록되는 로그 패턴 -->
+<!--    <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %logger - %msg%n" />-->
+
+    <!-- 콘솔 로그 Appender -->
+<!--    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">-->
+<!--        <encoder>-->
+<!--            <pattern>${CONSOLE_LOG_PATTERN}</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+
+    <!-- 파일 로그 Appender -->
+<!--    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <encoder>-->
+<!--            <pattern>${FILE_LOG_PATTERN}</pattern>-->
+<!--        </encoder>-->
+<!--        &lt;!&ndash; RollingPolicy: 로그가 길어지면 가독성이 떨어지므로 로그를 나눠서 기록하기 위한 규칙 &ndash;&gt;-->
+<!--        &lt;!&ndash; 로그 파일을 크기, 시간 기반으로 관리하기 위한 SizeAndTimeBasedRollingPolicy &ndash;&gt;-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+<!--            &lt;!&ndash; 로그 파일명 패턴 &ndash;&gt;-->
+<!--            &lt;!&ndash; 날짜별로 기록되며 maxFileSize를 넘기면 인덱스(i)를 증가시켜 새로운 이름의 로그 파일에 기록을 이어간다 &ndash;&gt;-->
+<!--            <fileNamePattern>./logs/%d{yyyy-MM-dd}.%i.log</fileNamePattern>-->
+<!--            &lt;!&ndash; 로그 파일 최대 사이즈 &ndash;&gt;-->
+<!--            <maxFileSize>100MB</maxFileSize>-->
+<!--            &lt;!&ndash; 생성한 로그 파일 관리 일수 &ndash;&gt;-->
+<!--            <maxHistory>30</maxHistory>-->
+<!--        </rollingPolicy>-->
+<!--    </appender>-->
+
+    <!-- local Profile에서의 로그 설정 -->
+<!--    <springProfile name="local">-->
+<!--        &lt;!&ndash; 해당 패키지의 로그는 DEBUG 레벨부터 출력 &ndash;&gt;-->
+<!--        <logger name="com.example.demo.api.logger" level="DEBUG" />-->
+<!--        &lt;!&ndash; 전체적인 로그는 INFO 레벨부터 출력 &ndash;&gt;-->
+<!--        <root level="INFO">-->
+<!--            &lt;!&ndash; CONSOLE 로그 Appender를 로그 Appender로 등록 &ndash;&gt;-->
+<!--            <appender-ref ref="CONSOLE" />-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+    <!-- prod Profile에서의 로그 설정 -->
+<!--    <springProfile name="prod">-->
+<!--        <root level="INFO">-->
+<!--            <appender-ref ref="CONSOLE" />-->
+<!--            <appender-ref ref="FILE" />-->
+<!--        </root>-->
+<!--    </springProfile>-->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %clr(%-5level) %cyan(%logger{36}) - %msg%n</Pattern>
+        </layout>
+    </appender>
+
+    <appender name="INFO_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/info.log</file> <!-- 파일을 저장할 경로를 정한다 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>INFO</level>
+            <onMatch>ACCEPT</onMatch> <!-- 해당 레벨만 기록한다. -->
+            <onMismatch>DENY</onMismatch> <!-- 다른 수준의 레벨은 기록하지 않는다.(상위 레벨도 기록 안함), 상위 수준의 레벨에 대한 기록을 원하면 ACCEPT 로 하면 기록된다. -->
+        </filter> <!-- 레벨별 필터링이 필요없을 경우 filter class 관련된 부분을 삭제하면 됨-->
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern> <!-- 해당 패턴 네이밍으로 현재 로그가 기록됨 -->
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/info.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern> <!-- 해당 패턴 네이밍으로 이전 파일이 기록됨 -->
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize> <!-- 한 파일의 최대 용량 -->
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory> <!-- 한 파일의 최대 저장 기한 -->
+        </rollingPolicy>
+    </appender>
+
+    <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>./logs/warn.log</file>
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>WARN</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <encoder>
+            <pattern>[%d{yyyy-MM-dd HH:mm:ss}:%-3relative][%thread] %-5level %logger{35} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>./logs/warn.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>180</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- additivity: 부모 로거로 로그를 전파하지 않는다 -->
+    <!-- 이 로거(com.example.demo.api.logger)에 지정된 Appender만 사용하고, 루트 로거(root)가 가진 STDOUT 콘솔 Appender는 절대 사용하지 않는다 -->
+    <logger name="com.example.demo.api.logger" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="INFO_LOG" />
+        <appender-ref ref="WARN_LOG" />
+    </logger>
+
+    <logger name="org.hibernate.SQL" additivity="false">
+        <level value = "DEBUG" />
+        <appender-ref ref="INFO_LOG" />
+    </logger>
+
+    <!-- org.hibernate.SQL 로그 DEBUG 레벨로 -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="INFO_LOG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- org.hibernate.type 로그 TRACE 레벨로 -->
+    <logger name="org.hibernate.type" level="TRACE" additivity="false">
+        <appender-ref ref="INFO_LOG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <!-- org.hibernate.type.descriptor.sql 로그 TRACE 레벨로 -->
+    <logger name="org.hibernate.type.descriptor.sql" level="TRACE" additivity="false">
+        <appender-ref ref="INFO_LOG" />
+        <appender-ref ref="STDOUT" />
+    </logger>
+</configuration>

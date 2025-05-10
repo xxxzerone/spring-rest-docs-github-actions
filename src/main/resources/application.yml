@@ -2,6 +2,9 @@ spring:
   application:
     name: demo
 
+  profiles:
+    default: local
+
   datasource:
     driver-class-name: org.h2.Driver
     url: jdbc:h2:mem:testdb;MODE=MYSQL
@@ -19,8 +22,23 @@ spring:
         format_sql: true
         highlight_sql: true
 
-logging:
-  level:
-    org.hibernate.type: trace
-    org.hibernate.SQL: debug
-    org.hibernate.type.descriptor.sql: trace
+# logging
+#logging:
+#  level:
+#    org.hibernate.type: trace
+#    org.hibernate.SQL: debug
+#    org.hibernate.type.descriptor.sql: trace
+#  logback:
+#    rollingpolicy:
+#      # 로그 파일을 유지할 기간(일수)을 설정한다. 여기서는 30일 간의 로그만 유지하도록 했다.
+#      max-history: 30
+#      # 로그 파일 1개의 최대 용량(size)를 설정한다. 여기서는 100MB로 설정했다.
+#      max-file-size: 100MB
+#      # 로그 파일의 용량이 설정한 용량을 초과하거나 날짜가 변경될 경우 새로이 만들어질 로그 파일의 이름에 관한 규칙(pattern)을 설정한다.
+#      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}-%i.log
+#  file:
+#    # 로그 파일의 이름을 설정한다. 여기서 프로젝트 하위에 logs 디렉터리의 하위에 demo1.log라는 이름으로 로그 파일을 생성하라는 의미이다.
+#    name: ./logs/demo.log
+#  pattern:
+#    # 로그 출력 시 출력하는 날짜와 시간의 형식과 타임존(time zone)을 설정한다. 여기서는 Asia/Seoul로 설정했다. 만약 타임존을 설정하지 않을 경우 UTC 시간을 기준으로 출력한다.
+#    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
